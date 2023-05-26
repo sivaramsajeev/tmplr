@@ -1,0 +1,60 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        arch: [x64, arm64]
+
+    steps:
+      - name: Set up Rust
+        uses: actions/setup-rust@v1
+        with:
+          rust-version: stable
+
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Build
+        run: cargo build --release
+
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: release
+          path: target/release/my-app
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: release
+
+      - name: Determine Binary Version
+        id: version
+        run: |
+          echo "::set-output name=binary_version::tmplr_${{ matrix.os }}_${{ matrix.arch }}_v${{ github.ref }}"
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ env.binary_version }}
+          body: |
+            Made with ❤️ and 🦀.
+          draft: false
+          prerelease: false
