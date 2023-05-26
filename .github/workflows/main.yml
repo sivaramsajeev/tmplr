@@ -55,6 +55,6 @@ jobs:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ env.binary_version }}
           body: |
-            Made with ❤️ and 🦀.
+            Made with ❤️ and 🦀
           draft: false
           prerelease: false
