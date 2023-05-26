@@ -28,7 +28,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: release
-          path: tmplr/${{ matrix.os }}/tmplr
+          path: /${{ matrix.os }}/**
 
   release:
     needs: build
@@ -42,7 +42,6 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: release
-          path: tmplr/${{ matrix.os }}/tmplr
 
       - name: Determine Binary Version
         id: version
